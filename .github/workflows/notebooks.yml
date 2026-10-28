@@ -1,0 +1,52 @@
+name: notebooks
+
+# Every notebook must run top to bottom from a clean kernel. Notebooks 05 (live website)
+# and 06 (R via rpy2) can only run here, so their key outputs are published as annotations.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  run-all:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.5"
+      - run: pip install -r requirements.txt rpy2
+      - name: Download the College data
+        run: python get_college_data.py
+      - name: Execute every notebook from a clean kernel
+        run: |
+          mkdir -p executed
+          for nb in notebooks/*.ipynb; do
+            echo "::group::$nb"
+            jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=600 \
+              --output-dir executed "$nb" || { echo "::error title=$nb::failed to execute"; exit 1; }
+            echo "::endgroup::"
+          done
+      - name: Publish outputs of the CI-only notebooks
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, glob
+          for path in sorted(glob.glob("executed/0[56]_*.ipynb")):
+              nb = json.load(open(path))
+              lines = []
+              for i, c in enumerate(nb["cells"]):
+                  for o in c.get("outputs", []):
+                      if o["output_type"] == "stream":
+                          lines.append(f"[{i}] " + "".join(o["text"]).strip())
+                      elif o["output_type"] in ("execute_result", "display_data") and "text/plain" in o.get("data", {}):
+                          lines.append(f"[{i}] " + "".join(o["data"]["text/plain"]).strip()[:800])
+                      elif o["output_type"] == "error":
+                          lines.append(f"[{i}] ERROR {o['ename']}: {o['evalue']}")
+              text = "\n".join(lines)[:60000]
+              print(f"::notice title={path}::" + text.replace("%", "%25").replace("\n", "%0A"))
+          PY

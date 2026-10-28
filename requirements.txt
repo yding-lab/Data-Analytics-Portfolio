@@ -1,0 +1,16 @@
+# Tested with Python 3.12 / 3.13
+pandas>=2.1
+numpy>=1.26
+matplotlib>=3.8
+seaborn>=0.13
+scipy>=1.11
+requests>=2.31
+beautifulsoup4>=4.12
+ipython-sql==0.5.0       # %%sql magic (notebook 02)
+prettytable==3.10.0      # pinned with ipython-sql
+pyreadr>=0.5             # get_college_data.py
+jupyter
+nbconvert>=7
+ipykernel
+# Notebook 06 only (R cells): an R installation plus
+# rpy2>=3.5
