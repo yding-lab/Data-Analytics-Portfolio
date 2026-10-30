@@ -34,13 +34,27 @@ Analytics foundations in Python, SQL and R: data cleaning, exploratory analysis,
 
 | Question | Result |
 |---|---|
-| Private vs public tuition | Private mean $11,802 vs public $6,813 out-of-state (p < 10⁻⁶⁰) |
-| Size vs tuition | Large institutions are *cheaper*: median $7,822 vs $10,520. This is mostly a public/private effect, since 151 of the 218 large institutions are public. Enrollment vs tuition: r = −0.155 |
+| Private vs public tuition | Private mean $11,802 vs public $6,813 out-of-state; medians $11,200 vs $6,609 (p < 10⁻⁶⁰) |
+| Size vs tuition | Overall, large institutions are *cheaper*: median $7,822 vs $10,520. That's a public/private effect, since 151 of the 218 large institutions are public. **Within each type the direction reverses**: large private colleges have a median of $14,235 vs $11,005 for small ones, and large public ones $6,806 vs $6,297 (Simpson's paradox). Enrollment vs tuition: r = −0.155 |
 | Selectivity vs student profile | Acceptance rate vs share of top-10% students: r = −0.479 (moderate) |
 | Selectivity vs faculty credentials | Acceptance rate vs share of PhD faculty: r = −0.318, p < 10⁻¹⁸. Significant but weak (r² = 0.10) |
 | Tuition vs applications | r = 0.050, p = 0.16: no evidence of a relationship |
 
-**Limitations.** These are observational, single-year results with no controls for confounders such as institution type or wealth, and correlations aren't causal. The notebook ends with suggested next steps (multivariate models, stratifying by institution type).
+**Key figures.** These are written by section 13 of the notebook from the same data, with tuition in 1995 US dollars.
+
+<img src="figures/tuition_by_type.png" width="49%" alt="Box plot of out-of-state tuition, private vs public colleges, 1995">
+
+*Private colleges charged more.* The median out-of-state tuition was $11,200 at private colleges (n = 565) and $6,609 at public ones (n = 212). The two distributions barely overlap in their middle halves.
+
+<img src="figures/tuition_by_size_and_type.png" width="49%" alt="Box plots of tuition by size, split into private and public">
+
+*Size alone is misleading.* Pooled, large colleges look cheaper. Split by type, large colleges charge more in both groups, and the pooled result is a mix effect: most large colleges are public. This still isn't a causal size effect, because large private colleges are often well-resourced research universities.
+
+<img src="figures/selectivity_vs_top10.png" width="49%" alt="Scatter plot of acceptance rate against share of new students from the top 10% of their high-school class">
+
+*Selective colleges enrolled stronger classes.* Acceptance rate and the share of new students from the top 10% of their high-school class are moderately negatively correlated (r = −0.48). Of the 17 colleges that accepted fewer than 35% of applicants, 16 were private.
+
+**Limitations.** These are observational, single-year (1995) results, and correlations aren't causal. Apart from the within-type split above, confounders such as institutional wealth, reputation and location aren't controlled. The notebook ends with suggested next steps (multivariate models, controls for selectivity and resources).
 
 ## Skill notebooks
 
@@ -65,4 +79,4 @@ jupyter lab notebooks/                   # then Kernel -> Restart & Run All
 for nb in notebooks/*.ipynb; do jupyter nbconvert --to notebook --execute --output-dir executed "$nb"; done
 ```
 
-The committed outputs of notebooks 01–04 and 07 come from a clean-kernel run, and their written conclusions were checked against those outputs.
+The committed outputs of notebooks 01–04 and 07 come from a clean-kernel run in a fresh virtual environment built from `requirements.txt`, and their written conclusions were checked against those outputs. Notebook 01 also writes the README figures to `figures/`.
